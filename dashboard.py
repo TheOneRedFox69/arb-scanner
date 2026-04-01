@@ -697,21 +697,6 @@ with tab4:
     """, unsafe_allow_html=True)
     st.caption("⚠️ Projection assumes consistent opportunity volume and successful execution. Actual results will vary.")
 
-    st.divider()
-    st.markdown(f'<div class="section-label">{tooltip("bookmaker_risk","Bookmaker Risk Guide")}</div>', unsafe_allow_html=True)
-    from bookmaker_ratings import BOOKMAKER_RATINGS
-    for name, r in BOOKMAKER_RATINGS.items():
-        stars = "★" * r["rating"] + "☆" * (5 - r["rating"])
-        st.markdown(f"""
-        <div style="display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:1px solid rgba(99,102,241,0.08);">
-            <span style="font-size:18px;width:24px;">{r['icon']}</span>
-            <div style="flex:1;">
-                <div style="font-size:13px;font-weight:600;color:#cbd5e1;">{name} <span style="color:{r['color']};font-size:11px;font-family:'JetBrains Mono',monospace;">· {r['label']}</span></div>
-                <div style="font-size:11px;color:#475569;margin-top:2px;">{r['note']}</div>
-            </div>
-            <div style="color:{r['color']};font-size:12px;font-family:'JetBrains Mono',monospace;white-space:nowrap;">{stars}</div>
-        </div>
-        """, unsafe_allow_html=True)
 
 # ════════════════════════════════════════════════════════════════════════════════
 # TAB 5 — BET HISTORY
