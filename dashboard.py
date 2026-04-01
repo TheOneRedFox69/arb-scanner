@@ -233,15 +233,18 @@ with tab1:
                 st.markdown('<div class="log-section"><div class="log-section-title">Log this bet to tracker</div>', unsafe_allow_html=True)
 
                 # Single total units input — splits automatically across outcomes
-                total_input = st.number_input(
-                    "Total units to stake across this arb",
-                    min_value=0.0,
-                    value=float(round(total_units, 2)),
-                    step=1.0,
-                    format="%.2f",
-                    key=f"total_{i}",
-                    help="Enter your total stake in units. The tool will split this across all outcomes in the correct proportions."
-                )
+                col_input, col_spacer = st.columns([2, 3])
+                with col_input:
+                    total_input = st.number_input(
+                        "Total units to stake",
+                        min_value=1,
+                        max_value=100000,
+                        value=10,
+                        step=1,
+                        key=f"total_{i}",
+                        help="Enter your total stake in units. The tool will split this across all outcomes in the correct proportions."
+                    )
+                total_input = float(total_input)
 
                 # Auto-split across outcomes using the arb proportions
                 arb_pct = opp["arb_percent"] / 100
