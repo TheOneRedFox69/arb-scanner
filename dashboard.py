@@ -449,7 +449,7 @@ with tab2:
                 num_outcomes = st.radio("Number of outcomes", options=[2, 3], horizontal=True, help="2 for NBA/MLB/Tennis (no draw). 3 for soccer (win/draw/lose).")
                 outcome_data = []
                 out_cols = st.columns(num_outcomes)
-                for j in range(num_outcomes):
+                for j in range(int(num_outcomes)):
                     with out_cols[j]:
                         st.markdown(f"**Outcome {j+1}**")
                         o_name = st.text_input("Outcome", key=f"r_name_{j}", placeholder="e.g. Arsenal" if j==0 else "Draw" if j==1 else "Chelsea")
