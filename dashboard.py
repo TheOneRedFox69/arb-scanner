@@ -435,8 +435,6 @@ with tab2:
             st.error("Could not connect to Google Sheets.")
         else:
             st.caption("Use this form to log any arbitrage bet placed manually or missed by the scanner.")
-            num_outcomes_choice = st.radio("Number of outcomes", options=["2 outcomes (no draw)", "3 outcomes (win / draw / lose)"], horizontal=True, help="Choose 2 for NBA/MLB/Tennis. Choose 3 for soccer.")
-            num_outcomes = 3 if "3" in num_outcomes_choice else 2
             with st.form("retro_bet_form", clear_on_submit=True):
                 col1, col2 = st.columns(2)
                 with col1:
@@ -448,6 +446,8 @@ with tab2:
                     retro_profit_pct = st.number_input("Profit % at time of placing", min_value=0.0, max_value=20.0, value=1.0, step=0.01, format="%.3f")
                     retro_notes = st.text_input("Notes", placeholder="e.g. placed manually, scanner offline...")
                 st.divider()
+                num_outcomes_choice = st.radio("Number of outcomes", options=["2 outcomes (no draw)", "3 outcomes (win / draw / lose)"], horizontal=True, help="Choose 2 for NBA/MLB/Tennis. Choose 3 for soccer.")
+                num_outcomes = 3 if "3" in num_outcomes_choice else 2
                 outcome_data = []
                 out_cols = st.columns(num_outcomes)
                 placeholders = [
@@ -521,8 +521,9 @@ with tab3:
         else:
             stats = get_summary_stats(bets, unit_size)
             irr_display = f"{stats['irr']}%" if stats['irr'] is not None else "Need 2+ settled"
-            be = break_even_calculator(api_cost, stats.get("avg_profit_pct", 1.0) or 1.0, unit_size)
-            be_display = str(be["bets_needed"]) if be else "—"
+            be = break_even_calculator(api_cost, stats.get("avg_profit_pct", 1.0) or 1.0, unit_size, avg_stake_units=10)
+            be_display = f"{be['bets_needed']} bets" if be else "—"
+            be_sub = f"~{be['profit_per_bet']} profit/bet · API cost {api_cost}/mo" if be else ""
 
             st.markdown(f"""
             <div class="metric-grid-6">
@@ -531,7 +532,7 @@ with tab3:
                 <div class="metric-card"><div class="metric-label">{tooltip("irr","IRR Annualised")}</div><div class="metric-value blue">{irr_display}</div><div class="metric-sub">equiv. annual return</div></div>
                 <div class="metric-card"><div class="metric-label">Total Staked</div><div class="metric-value">{stats['total_staked']}</div><div class="metric-sub">capital deployed</div></div>
                 <div class="metric-card amber"><div class="metric-label">{tooltip("pending_exposure","Pending Exposure")}</div><div class="metric-value amber">{stats['pending_exposure']}</div><div class="metric-sub">{stats['pending_bets']} open bets</div></div>
-                <div class="metric-card"><div class="metric-label">{tooltip("break_even","Break-even bets/mo")}</div><div class="metric-value blue">{be_display}</div><div class="metric-sub">to cover API cost</div></div>
+                <div class="metric-card"><div class="metric-label">{tooltip("break_even","Break-even bets/mo")}</div><div class="metric-value blue">{be_display}</div><div class="metric-sub">{be_sub}</div></div>
             </div>""", unsafe_allow_html=True)
 
             import plotly.graph_objects as go
@@ -691,7 +692,7 @@ with tab4:
     <div class="metric-grid-3">
         <div class="metric-card green"><div class="metric-label">Projected Bankroll</div><div class="metric-value green">{final:,.0f}</div><div class="metric-sub">after {proj_months} months</div></div>
         <div class="metric-card green"><div class="metric-label">Projected Growth</div><div class="metric-value green">+{growth_pct}%</div><div class="metric-sub">total return</div></div>
-        <div class="metric-card"><div class="metric-label">{tooltip("break_even","Break-even Bets/mo")}</div><div class="metric-value blue">{break_even_calculator(api_cost, proj_profit, unit_size)['bets_needed'] if break_even_calculator(api_cost, proj_profit, unit_size) else '—'}</div><div class="metric-sub">to cover API cost of {api_cost}/mo</div></div>
+        <div class="metric-card"><div class="metric-label">{tooltip("break_even","Break-even Bets/mo")}</div><div class="metric-value blue">{be_proj['bets_needed'] if (be_proj := break_even_calculator(api_cost, proj_profit, unit_size, 10)) else '—'}</div><div class="metric-sub">to cover API cost of {api_cost}/mo</div></div>
     </div>
     """, unsafe_allow_html=True)
     st.caption("⚠️ Projection assumes consistent opportunity volume and successful execution. Actual results will vary.")

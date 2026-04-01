@@ -74,26 +74,32 @@ def project_growth(bankroll, avg_profit_pct, bets_per_month, months=12):
     return result
 
 
-def break_even_calculator(api_cost_monthly, avg_profit_pct, unit_size):
+def break_even_calculator(api_cost_monthly, avg_profit_pct, unit_size, avg_stake_units=10):
     """
     Calculate how many bets needed per month to cover API costs.
 
-    api_cost_monthly: monthly API subscription cost in same currency as unit_size
+    api_cost_monthly: monthly API subscription cost in currency
     avg_profit_pct:   average profit per arb as a percentage
     unit_size:        value of 1 unit in currency
+    avg_stake_units:  average total units staked per arb bet
 
-    Returns: dict with bets needed and minimum stake per bet
+    Example: 2% profit, 10 unit stake, unit size 10
+    Profit per bet = 10 units * 2% * £10 = £2 per bet
+    Break-even = £30 / £2 = 15 bets
     """
-    if avg_profit_pct <= 0 or unit_size <= 0:
+    if avg_profit_pct <= 0 or unit_size <= 0 or avg_stake_units <= 0:
         return None
 
-    profit_per_unit = avg_profit_pct / 100
-    units_needed = api_cost_monthly / (profit_per_unit * unit_size)
-    bets_needed = math.ceil(units_needed)
+    profit_per_bet_currency = avg_stake_units * (avg_profit_pct / 100) * unit_size
+    if profit_per_bet_currency <= 0:
+        return None
+
+    bets_needed = math.ceil(api_cost_monthly / profit_per_bet_currency)
 
     return {
         "api_cost": api_cost_monthly,
         "bets_needed": bets_needed,
-        "min_units_per_bet": round(units_needed / max(bets_needed, 1), 2),
+        "profit_per_bet": round(profit_per_bet_currency, 2),
+        "avg_stake_units": avg_stake_units,
         "avg_profit_pct": avg_profit_pct,
     }
