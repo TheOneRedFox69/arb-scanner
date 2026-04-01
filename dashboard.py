@@ -205,13 +205,13 @@ def load_sheet_id():
 SHEET_ID = load_sheet_id()
 creds_dict = load_credentials()
 
-@st.cache_resource(ttl=300)
+@st.cache_resource(ttl=600)
 def get_cached_sheet(sheet_id):
     if not creds_dict or not sheet_id:
         return None
     return get_sheet(creds_dict, sheet_id)
 
-@st.cache_data(ttl=300)
+@st.cache_data(ttl=600)
 def get_cached_bets(sheet_id):
     ws = get_cached_sheet(sheet_id)
     if not ws:
@@ -225,15 +225,15 @@ with st.sidebar:
     api_key = st.text_input("Odds API Key", value=os.getenv("ODDS_API_KEY", ""), type="password")
     st.markdown(tooltip("unit_size", "Unit Size"), unsafe_allow_html=True)
     unit_size = st.number_input("", min_value=1, max_value=100000, value=10, step=1, key="unit_size_input",
-        label_visibility="collapsed")
+        label_visibility="visible")
     st.markdown(tooltip("arb_percent", "Min Profit %"), unsafe_allow_html=True)
     min_profit = st.slider("", min_value=0.0, max_value=5.0, value=0.5, step=0.1, key="min_profit_slider",
-        label_visibility="collapsed")
+        label_visibility="visible")
     st.divider()
     st.markdown("**Bankroll Management**")
     st.markdown(tooltip("kelly", "Bankroll (units)"), unsafe_allow_html=True)
     total_bankroll = st.number_input("", min_value=1, max_value=1000000, value=1000, step=10, key="bankroll_input",
-        label_visibility="collapsed")
+        label_visibility="visible")
     api_cost = st.number_input("Monthly API cost", min_value=0, max_value=1000, value=20, step=1)
     st.divider()
     selected_markets = st.multiselect("Markets", options=list(MARKET_KEYS.keys()), default=list(MARKET_KEYS.keys()), format_func=lambda k: MARKET_KEYS[k])
