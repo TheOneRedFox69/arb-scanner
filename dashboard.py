@@ -232,29 +232,46 @@ with tab1:
             elif worksheet:
                 st.markdown('<div class="log-section"><div class="log-section-title">Log this bet to tracker</div>', unsafe_allow_html=True)
 
-                input_cols = st.columns(n)
-                actual_stakes = []
-                for j in range(n):
-                    with input_cols[j]:
-                        suggested = opp["unit_stakes"][j]
-                        stake = st.number_input(
-                            f"{opp['outcomes'][j]} — units staked",
-                            min_value=0.0,
-                            value=float(suggested),
-                            step=0.01,
-                            format="%.4f",
-                            key=f"stake_{i}_{j}"
-                        )
-                        actual_stakes.append(stake)
+                # Single total units input — splits automatically across outcomes
+                total_input = st.number_input(
+                    "Total units to stake across this arb",
+                    min_value=0.0,
+                    value=float(round(total_units, 2)),
+                    step=1.0,
+                    format="%.2f",
+                    key=f"total_{i}",
+                    help="Enter your total stake in units. The tool will split this across all outcomes in the correct proportions."
+                )
 
+                # Auto-split across outcomes using the arb proportions
+                arb_pct = opp["arb_percent"] / 100
+                actual_stakes = [
+                    round(total_input * (1.0 / odds) / arb_pct, 4)
+                    for odds in opp["best_odds"]
+                ]
+
+                # Show the split breakdown
+                split_cols = st.columns(n)
+                for j in range(n):
+                    with split_cols[j]:
+                        st.markdown(f"""
+                        <div class="stat-box" style="margin-top:8px;">
+                            <div class="stat-box-label">{opp['outcomes'][j]}</div>
+                            <div class="stat-box-value" style="color:#818cf8;">{actual_stakes[j]} units</div>
+                            <div class="stat-box-label" style="margin-top:4px;">{opp['bookmakers'][j]}</div>
+                        </div>
+                        """, unsafe_allow_html=True)
+
+                # Summary row
                 total_actual = sum(actual_stakes)
                 total_actual_value = round(total_actual * unit_size, 2)
-                profit_estimate = round(profit_units * unit_size, 2)
+                est_profit_units = round(total_input * (1 - arb_pct), 4)
+                est_profit_value = round(est_profit_units * unit_size, 2)
 
                 st.markdown(f"""
                 <div class="log-summary">
                     <div>
-                        <div class="log-sum-label">Total units</div>
+                        <div class="log-sum-label">Total units staked</div>
                         <div class="log-sum-value">{round(total_actual, 4)}</div>
                     </div>
                     <div>
@@ -262,8 +279,8 @@ with tab1:
                         <div class="log-sum-value">{total_actual_value}</div>
                     </div>
                     <div>
-                        <div class="log-sum-label">Est. profit</div>
-                        <div class="log-sum-value green">{profit_estimate}</div>
+                        <div class="log-sum-label">Est. profit (units)</div>
+                        <div class="log-sum-value green">{est_profit_units} ({est_profit_value})</div>
                     </div>
                 </div>
                 """, unsafe_allow_html=True)
