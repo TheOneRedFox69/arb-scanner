@@ -89,6 +89,21 @@ def load_credentials():
 SHEET_ID = os.getenv("GOOGLE_SHEET_ID", "")
 creds_dict = load_credentials()
 
+@st.cache_resource(ttl=300)
+def get_cached_sheet(sheet_id):
+    """Cache the Google Sheets connection for 5 minutes to avoid rate limits."""
+    if not creds_dict or not sheet_id:
+        return None
+    return get_sheet(creds_dict, sheet_id)
+
+@st.cache_data(ttl=300)
+def get_cached_bets(sheet_id):
+    """Cache bet data for 5 minutes to avoid rate limits."""
+    ws = get_cached_sheet(sheet_id)
+    if not ws:
+        return []
+    return get_all_bets(ws)
+
 with st.sidebar:
     st.markdown("### ⚡ ArbScanner Pro")
     st.divider()
@@ -182,7 +197,7 @@ with tab1:
         st.markdown('<div class="empty-state"><div class="empty-icon">📡</div><div class="empty-title">No opportunities above threshold</div><div class="empty-sub">lower the min profit % or scan again later</div></div>', unsafe_allow_html=True)
     else:
         st.markdown(f'<div class="section-label">{len(filtered)} opportunit{"y" if len(filtered)==1 else "ies"} found</div>', unsafe_allow_html=True)
-        worksheet = get_sheet(creds_dict, SHEET_ID) if creds_dict and SHEET_ID else None
+        worksheet = get_cached_sheet(SHEET_ID) if creds_dict and SHEET_ID else None
 
         for i, opp in enumerate(filtered, 1):
             total_units = opp["total_staked_units"]
@@ -314,11 +329,11 @@ with tab2:
     if not creds_dict or not SHEET_ID:
         st.info("Add GOOGLE_CREDENTIALS and GOOGLE_SHEET_ID to Streamlit secrets to unlock analytics.")
     else:
-        worksheet = get_sheet(creds_dict, SHEET_ID)
+        worksheet = get_cached_sheet(SHEET_ID)
         if not worksheet:
             st.error("Could not connect to Google Sheets.")
         else:
-            bets = get_all_bets(worksheet)
+            bets = get_cached_bets(SHEET_ID)
             if not bets:
                 st.markdown('<div class="empty-state"><div class="empty-icon">📊</div><div class="empty-title">No bets logged yet</div><div class="empty-sub">log your first bet from the scanner tab</div></div>', unsafe_allow_html=True)
             else:
@@ -395,11 +410,11 @@ with tab3:
     if not creds_dict or not SHEET_ID:
         st.info("Add GOOGLE_CREDENTIALS and GOOGLE_SHEET_ID to Streamlit secrets to see bet history.")
     else:
-        worksheet = get_sheet(creds_dict, SHEET_ID)
+        worksheet = get_cached_sheet(SHEET_ID)
         if not worksheet:
             st.error("Could not connect to Google Sheets.")
         else:
-            bets = get_all_bets(worksheet)
+            bets = get_cached_bets(SHEET_ID)
             if not bets:
                 st.markdown('<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-title">No bets logged yet</div><div class="empty-sub">your logged bets will appear here</div></div>', unsafe_allow_html=True)
             else:
@@ -409,4 +424,7 @@ with tab3:
                 display_cols = [c for c in display_cols if c in df.columns]
                 st.dataframe(df[display_cols], use_container_width=True, hide_index=True)
                 st.caption(f"Showing {len(bets)} bets. Edit Status and Actual Profit directly in your Google Sheet to update analytics.")
+                if st.button("🔄 Refresh bet history"):
+                    st.cache_data.clear()
+                    st.rerun()
                 st.link_button("Open Google Sheet", f"https://docs.google.com/spreadsheets/d/{SHEET_ID}")
