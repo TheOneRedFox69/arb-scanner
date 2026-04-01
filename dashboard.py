@@ -223,9 +223,9 @@ with st.sidebar:
     st.markdown("### ⚡ ArbScanner Pro")
     st.divider()
     api_key = st.text_input("Odds API Key", value=os.getenv("ODDS_API_KEY", ""), type="password")
-    st.markdown(tooltip("unit_size", "Unit Size ($ per unit)"), unsafe_allow_html=True)
-    unit_size = st.number_input("Unit Size $ per unit", min_value=1, max_value=100000, value=10, step=1, key="unit_size_input",
-        help="The dollar value of 1 unit. E.g. $10 means a 2.3 unit stake = $23.")
+    st.markdown(tooltip("unit_size", "Unit Size"), unsafe_allow_html=True)
+    unit_size = st.number_input("", min_value=1, max_value=100000, value=10, step=1, key="unit_size_input",
+        label_visibility="collapsed")
     st.markdown(tooltip("arb_percent", "Min Profit %"), unsafe_allow_html=True)
     min_profit = st.slider("", min_value=0.0, max_value=5.0, value=0.5, step=0.1, key="min_profit_slider",
         label_visibility="collapsed")
@@ -268,7 +268,7 @@ if not api_key:
     st.markdown('<div class="empty-state"><div class="empty-icon">🔑</div><div class="empty-title">Enter your Odds API key in the sidebar</div><div class="empty-sub">the-odds-api.com</div></div>', unsafe_allow_html=True)
     st.stop()
 
-tab1, tab2, tab3, tab4, tab5 = st.tabs(["⚡  Live Scanner", "✍️  Log Past Bet", "📊  Analytics", "💰  Bankroll", "📋  History"])
+tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(["⚡  Live Scanner", "✍️  Log Past Bet", "📊  Analytics", "💰  Bankroll", "📋  History", "🏦  Bookmakers"])
 
 # ════════════════════════════════════════════════════════════════════════════════
 # TAB 1 — LIVE SCANNER
@@ -532,7 +532,7 @@ with tab3:
                 <div class="metric-card"><div class="metric-label">{tooltip("irr","IRR Annualised")}</div><div class="metric-value blue">{irr_display}</div><div class="metric-sub">equiv. annual return</div></div>
                 <div class="metric-card"><div class="metric-label">Total Staked</div><div class="metric-value">{stats['total_staked']}</div><div class="metric-sub">capital deployed</div></div>
                 <div class="metric-card amber"><div class="metric-label">{tooltip("pending_exposure","Pending Exposure")}</div><div class="metric-value amber">{stats['pending_exposure']}</div><div class="metric-sub">{stats['pending_bets']} open bets</div></div>
-                <div class="metric-card"><div class="metric-label">{tooltip("break_even","Break-even bets/mo")}</div><div class="metric-value blue">{be_display}</div><div class="metric-sub">{be_sub}</div><div class="metric-sub" style="color:#334155;font-size:9px;margin-top:4px;">Assumes 1 unit = ${unit_size}. Adjust unit size in sidebar to match your currency.</div></div>
+                <div class="metric-card"><div class="metric-label">{tooltip("break_even","Break-even bets/mo")}</div><div class="metric-value blue">{be_display}</div><div class="metric-sub">{be_sub}</div></div>
             </div>""", unsafe_allow_html=True)
 
             import plotly.graph_objects as go
@@ -737,3 +737,145 @@ with tab5:
                     st.rerun()
             with col_b:
                 st.link_button("📊 Open Google Sheet", f"https://docs.google.com/spreadsheets/d/{SHEET_ID}")
+
+# ════════════════════════════════════════════════════════════════════════════════
+# TAB 6 — BOOKMAKER DIRECTORY
+# ════════════════════════════════════════════════════════════════════════════════
+with tab6:
+    from bookmaker_ratings import BOOKMAKER_RATINGS
+
+    st.markdown('<div class="section-label">Bookmaker Directory</div>', unsafe_allow_html=True)
+    st.caption("Account creation guide for arb bettors based in New Zealand using a NZ passport for ID verification.")
+
+    # ── Filters ───────────────────────────────────────────────────────────────
+    f1, f2, f3 = st.columns(3)
+    with f1:
+        filter_risk = st.multiselect("Filter by risk", options=["Arb Friendly", "Moderate Risk", "High Risk", "Limit Risk"], default=["Arb Friendly", "Moderate Risk", "High Risk", "Limit Risk"])
+    with f2:
+        filter_nz = st.selectbox("NZ passport accepted", options=["All", "Yes only", "No only"])
+    with f3:
+        filter_vpn = st.selectbox("VPN risk level", options=["All", "Low", "Medium", "High", "Very High"])
+
+    st.divider()
+
+    # ── Summary stats ─────────────────────────────────────────────────────────
+    total_books = len(BOOKMAKER_RATINGS)
+    nz_friendly = sum(1 for b in BOOKMAKER_RATINGS.values() if b["nz_passport"])
+    arb_friendly = sum(1 for b in BOOKMAKER_RATINGS.values() if b["rating"] >= 4)
+    low_vpn_risk = sum(1 for b in BOOKMAKER_RATINGS.values() if b["vpn_risk"] == "Low")
+
+    st.markdown(f"""
+    <div class="metric-grid">
+        <div class="metric-card"><div class="metric-label">Total Bookmakers</div><div class="metric-value blue">{total_books}</div><div class="metric-sub">in directory</div></div>
+        <div class="metric-card green"><div class="metric-label">NZ Passport Accepted</div><div class="metric-value green">{nz_friendly}</div><div class="metric-sub">of {total_books} bookmakers</div></div>
+        <div class="metric-card green"><div class="metric-label">Arb Friendly</div><div class="metric-value green">{arb_friendly}</div><div class="metric-sub">low restriction risk</div></div>
+        <div class="metric-card"><div class="metric-label">Low VPN Risk</div><div class="metric-value blue">{low_vpn_risk}</div><div class="metric-sub">safe to use with VPN</div></div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # ── VPN warning ───────────────────────────────────────────────────────────
+    st.markdown("""
+    <div style="background:rgba(251,191,36,0.08);border:1px solid rgba(251,191,36,0.25);border-radius:10px;padding:14px 18px;margin-bottom:20px;">
+        <div style="font-size:12px;color:#fbbf24;font-weight:600;margin-bottom:6px;">⚠️ VPN Usage Note</div>
+        <div style="font-size:12px;color:#94a3b8;line-height:1.6;">
+            Using a VPN to access geo-restricted bookmakers carries risk. Bookmakers actively detect VPN usage and may suspend accounts or withhold funds if detected. 
+            For bookmakers marked <strong style="color:#34d399;">Low VPN Risk</strong>, this is generally safe as they accept international players anyway and a VPN adds little risk. 
+            For <strong style="color:#f87171;">High/Very High VPN Risk</strong> bookmakers, your account and funds may be at risk — proceed with caution and keep balances minimal.
+            Always use a reputable VPN provider and connect to a server in the bookmaker's licensed territory.
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # ── Bookmaker cards ───────────────────────────────────────────────────────
+    filtered_books = {}
+    for name, data in BOOKMAKER_RATINGS.items():
+        if data["label"] not in filter_risk:
+            continue
+        if filter_nz == "Yes only" and not data["nz_passport"]:
+            continue
+        if filter_nz == "No only" and data["nz_passport"]:
+            continue
+        if filter_vpn != "All" and data["vpn_risk"] != filter_vpn:
+            continue
+        filtered_books[name] = data
+
+    if not filtered_books:
+        st.info("No bookmakers match your current filters.")
+    else:
+        st.markdown(f'<div class="section-label">{len(filtered_books)} bookmaker{"s" if len(filtered_books)!=1 else ""}</div>', unsafe_allow_html=True)
+
+        for name, data in filtered_books.items():
+            stars = "★" * data["rating"] + "☆" * (5 - data["rating"])
+            nz_badge = '<span style="color:#34d399;font-weight:600;">✓ NZ passport accepted</span>' if data["nz_passport"] else '<span style="color:#f87171;font-weight:600;">✗ NZ passport issues</span>'
+            vpn_color = "#34d399" if data["vpn_risk"] == "Low" else "#fbbf24" if data["vpn_risk"] == "Medium" else "#f87171"
+
+            with st.expander(f"{data['icon']}  {name}  ·  {data['label']}  ·  {stars}", expanded=False):
+                c1, c2 = st.columns(2)
+
+                with c1:
+                    st.markdown(f"""
+                    <div style="display:flex;flex-direction:column;gap:10px;">
+                        <div>
+                            <div class="stat-box-label">Arb Risk Rating</div>
+                            <div style="font-size:16px;font-weight:700;color:{data['color']};font-family:'JetBrains Mono',monospace;">{data['label']} — {stars}</div>
+                        </div>
+                        <div>
+                            <div class="stat-box-label">Country of Origin</div>
+                            <div style="font-size:13px;color:#cbd5e1;">🌍 {data['country']}</div>
+                        </div>
+                        <div>
+                            <div class="stat-box-label">Currencies Accepted</div>
+                            <div style="font-size:13px;color:#cbd5e1;">💱 {data['currency']}</div>
+                        </div>
+                        <div>
+                            <div class="stat-box-label">Minimum Deposit</div>
+                            <div style="font-size:13px;color:#cbd5e1;">{data['min_deposit']}</div>
+                        </div>
+                        <div>
+                            <div class="stat-box-label">NZ Passport</div>
+                            <div style="font-size:13px;">{nz_badge}</div>
+                        </div>
+                        <div>
+                            <div class="stat-box-label">VPN Risk</div>
+                            <div style="font-size:13px;font-weight:600;color:{vpn_color};font-family:'JetBrains Mono',monospace;">{data['vpn_risk']}</div>
+                        </div>
+                    </div>
+                    """, unsafe_allow_html=True)
+
+                with c2:
+                    st.markdown(f"""
+                    <div style="display:flex;flex-direction:column;gap:10px;">
+                        <div>
+                            <div class="stat-box-label">NZ Account Notes</div>
+                            <div style="font-size:12px;color:#94a3b8;line-height:1.5;">{data['nz_note']}</div>
+                        </div>
+                        <div>
+                            <div class="stat-box-label" style="color:#34d399;">✓ Highlights</div>
+                            <div style="font-size:12px;color:#94a3b8;line-height:1.5;">{data['highlights']}</div>
+                        </div>
+                        <div>
+                            <div class="stat-box-label" style="color:#f87171;">⚠ Watch outs</div>
+                            <div style="font-size:12px;color:#94a3b8;line-height:1.5;">{data['watchouts']}</div>
+                        </div>
+                        <div>
+                            <div class="stat-box-label">Arb Tolerance Note</div>
+                            <div style="font-size:12px;color:#94a3b8;line-height:1.5;">{data['note']}</div>
+                        </div>
+                    </div>
+                    """, unsafe_allow_html=True)
+
+                st.markdown(f"""
+                <div style="margin-top:12px;padding:10px 14px;background:rgba(99,102,241,0.06);border-radius:8px;border:1px solid rgba(99,102,241,0.12);">
+                    <span style="font-size:10px;color:#475569;font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:0.08em;">Website: </span>
+                    <span style="font-size:12px;color:#818cf8;">{data['signup_url']}</span>
+                </div>
+                """, unsafe_allow_html=True)
+
+    st.divider()
+    st.markdown("""
+    <div style="font-size:11px;color:#334155;line-height:1.6;font-family:'JetBrains Mono',monospace;">
+        ⚠ This directory is for informational purposes only. Bookmaker policies change frequently. 
+        Always verify current terms before creating an account. Arb betting is legal but bookmakers 
+        reserve the right to restrict accounts. Gamble responsibly.
+    </div>
+    """, unsafe_allow_html=True)
