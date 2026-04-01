@@ -205,13 +205,13 @@ def load_sheet_id():
 SHEET_ID = load_sheet_id()
 creds_dict = load_credentials()
 
-@st.cache_resource(ttl=600)
+@st.cache_resource(ttl=300)
 def get_cached_sheet(sheet_id):
     if not creds_dict or not sheet_id:
         return None
     return get_sheet(creds_dict, sheet_id)
 
-@st.cache_data(ttl=600)
+@st.cache_data(ttl=300)
 def get_cached_bets(sheet_id):
     ws = get_cached_sheet(sheet_id)
     if not ws:
@@ -225,15 +225,15 @@ with st.sidebar:
     api_key = st.text_input("Odds API Key", value=os.getenv("ODDS_API_KEY", ""), type="password")
     st.markdown(tooltip("unit_size", "Unit Size"), unsafe_allow_html=True)
     unit_size = st.number_input("", min_value=1, max_value=100000, value=10, step=1, key="unit_size_input",
-        label_visibility="visible")
+        label_visibility="collapsed")
     st.markdown(tooltip("arb_percent", "Min Profit %"), unsafe_allow_html=True)
     min_profit = st.slider("", min_value=0.0, max_value=5.0, value=0.5, step=0.1, key="min_profit_slider",
-        label_visibility="visible")
+        label_visibility="collapsed")
     st.divider()
     st.markdown("**Bankroll Management**")
     st.markdown(tooltip("kelly", "Bankroll (units)"), unsafe_allow_html=True)
     total_bankroll = st.number_input("", min_value=1, max_value=1000000, value=1000, step=10, key="bankroll_input",
-        label_visibility="visible")
+        label_visibility="collapsed")
     api_cost = st.number_input("Monthly API cost", min_value=0, max_value=1000, value=20, step=1)
     st.divider()
     selected_markets = st.multiselect("Markets", options=list(MARKET_KEYS.keys()), default=list(MARKET_KEYS.keys()), format_func=lambda k: MARKET_KEYS[k])
@@ -446,17 +446,22 @@ with tab2:
                     retro_profit_pct = st.number_input("Profit % at time of placing", min_value=0.0, max_value=20.0, value=1.0, step=0.01, format="%.3f")
                     retro_notes = st.text_input("Notes", placeholder="e.g. placed manually, scanner offline...")
                 st.divider()
-                num_outcomes = st.radio("Number of outcomes", options=[2, 3], horizontal=True, help="2 for NBA/MLB/Tennis (no draw). 3 for soccer (win/draw/lose).")
+                num_outcomes_choice = st.radio("Number of outcomes", options=["2 outcomes (no draw)", "3 outcomes (win / draw / lose)"], horizontal=True, help="Choose 2 for NBA/MLB/Tennis. Choose 3 for soccer.")
+                num_outcomes = 3 if "3" in num_outcomes_choice else 2
                 outcome_data = []
                 out_cols = st.columns(num_outcomes)
-                for j in range(int(num_outcomes)):
+                placeholders = [
+                    ("e.g. Arsenal", "e.g. Draw", "e.g. Chelsea"),
+                    ("e.g. Home Team", "e.g. Away Team", ""),
+                ]
+                for j in range(num_outcomes):
                     with out_cols[j]:
                         st.markdown(f"**Outcome {j+1}**")
-                        o_name = st.text_input("Outcome", key=f"r_name_{j}", placeholder="e.g. Arsenal" if j==0 else "Draw" if j==1 else "Chelsea")
+                        o_name = st.text_input("Outcome name", key=f"r_name_{j}", placeholder=placeholders[0][j] if j < 3 else f"Outcome {j+1}")
                         o_odds = st.number_input("Odds", min_value=1.01, max_value=50.0, value=2.0, step=0.01, key=f"r_odds_{j}", format="%.2f")
                         o_book = st.text_input("Bookmaker", key=f"r_book_{j}", placeholder="e.g. Bet365")
                         o_units = st.number_input("Units staked", min_value=0.0, value=1.0, step=0.01, key=f"r_units_{j}", format="%.4f")
-                        outcome_data.append({"name":o_name,"odds":o_odds,"book":o_book,"units":o_units})
+                        outcome_data.append({"name": o_name, "odds": o_odds, "book": o_book, "units": o_units})
                 st.divider()
                 st.caption("Settlement details — fill in once the bet resolves")
                 set_col1, set_col2, set_col3 = st.columns(3)
