@@ -24,6 +24,7 @@ section[data-testid="stSidebar"] label{color:#64748b!important;font-size:10px!im
 .stTabs [data-baseweb="tab-list"]{background:rgba(99,102,241,0.08)!important;border-radius:10px!important;padding:4px!important;border:1px solid rgba(99,102,241,0.15)!important}
 .stTabs [data-baseweb="tab"]{color:#475569!important;font-size:12px!important;font-weight:600!important;border-radius:8px!important}
 .stTabs [aria-selected="true"]{background:linear-gradient(135deg,#6366f1,#4f46e5)!important;color:white!important}
+.stNumberInput input{background:rgba(99,102,241,0.08)!important;border:1px solid rgba(99,102,241,0.2)!important;border-radius:8px!important;color:#e2e8f0!important;font-family:'JetBrains Mono',monospace!important}
 .metric-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:28px}
 .metric-grid-6{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:28px}
 .metric-card{background:linear-gradient(135deg,rgba(99,102,241,0.08) 0%,rgba(79,70,229,0.05) 100%);border:1px solid rgba(99,102,241,0.15);border-radius:16px;padding:18px 20px;position:relative;overflow:hidden}
@@ -52,8 +53,14 @@ section[data-testid="stSidebar"] label{color:#64748b!important;font-size:10px!im
 .bet-line{display:flex;justify-content:space-between;margin-bottom:5px}
 .bet-line-label{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#334155;font-family:'JetBrains Mono',monospace}
 .bet-line-val{font-size:13px;font-weight:600;font-family:'JetBrains Mono',monospace}
-.val-odds{color:#818cf8}.val-cash{color:#34d399}.val-units{color:#94a3b8}
+.val-odds{color:#818cf8}.val-units{color:#94a3b8}.val-profit{color:#34d399}
 .book-badge{margin-top:10px;display:inline-block;font-size:9px;color:#475569;background:rgba(15,23,41,0.8);border:1px solid rgba(99,102,241,0.12);padding:3px 8px;border-radius:4px;font-family:'JetBrains Mono',monospace}
+.log-section{background:rgba(99,102,241,0.05);border:1px solid rgba(99,102,241,0.15);border-radius:12px;padding:16px;margin-top:16px}
+.log-section-title{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;color:#475569;margin-bottom:12px;font-family:'JetBrains Mono',monospace}
+.log-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px;margin-bottom:14px;padding:12px;background:rgba(15,23,41,0.5);border-radius:8px;border:1px solid rgba(99,102,241,0.1)}
+.log-sum-label{font-size:9px;text-transform:uppercase;letter-spacing:0.08em;color:#334155;font-family:'JetBrains Mono',monospace;margin-bottom:3px}
+.log-sum-value{font-size:13px;font-weight:600;color:#94a3b8;font-family:'JetBrains Mono',monospace}
+.log-sum-value.green{color:#34d399}
 .warn-line{font-size:10px;color:#334155;text-align:center;margin-top:18px;font-family:'JetBrains Mono',monospace}
 .empty-state{text-align:center;padding:64px 20px}
 .empty-icon{font-size:36px;margin-bottom:14px}
@@ -86,7 +93,8 @@ with st.sidebar:
     st.markdown("### ⚡ ArbScanner Pro")
     st.divider()
     api_key = st.text_input("Odds API Key", value=os.getenv("ODDS_API_KEY", ""), type="password")
-    unit_size = st.number_input("Unit Size", min_value=1.0, max_value=10000.0, value=10.0, step=1.0)
+    unit_size = st.number_input("Unit Size", min_value=1.0, max_value=10000.0, value=10.0, step=1.0,
+        help="The value of 1 unit in your currency. E.g. 1 unit = 50 means a 2.3 unit stake = 150")
     min_profit = st.slider("Min Profit %", min_value=0.0, max_value=5.0, value=0.5, step=0.1)
     st.divider()
     selected_markets = st.multiselect("Markets", options=list(MARKET_KEYS.keys()), default=list(MARKET_KEYS.keys()), format_func=lambda k: MARKET_KEYS[k])
@@ -105,7 +113,7 @@ st.markdown(f"""
     </div>
     <div class="header-unit">
         <div class="header-unit-label">Unit Size</div>
-        <div class="header-unit-value">£{unit_size:.0f}</div>
+        <div class="header-unit-value">{unit_size:.0f}</div>
     </div>
 </div>
 """, unsafe_allow_html=True)
@@ -118,6 +126,12 @@ tab1, tab2, tab3 = st.tabs(["⚡  Live Scanner", "📊  Analytics", "📋  Bet H
 
 with tab1:
     scan_clicked = st.button("⚡  SCAN MARKETS NOW", key="scan_btn")
+
+    if "scan_results" not in st.session_state:
+        st.session_state.scan_results = []
+    if "logged_bets" not in st.session_state:
+        st.session_state.logged_bets = set()
+
     if scan_clicked or auto_refresh:
         with st.spinner("Connecting to live odds feeds..."):
             all_events = fetch_all_sports(api_key)
@@ -138,59 +152,139 @@ with tab1:
                 for market_key in selected_markets:
                     opps = check_event_for_arb(event, market_key)
                     all_opps.extend(opps)
-        filtered = sorted([o for o in all_opps if o["profit_percent"] >= min_profit], key=lambda x: x["profit_percent"], reverse=True)
+
+        filtered = sorted(
+            [o for o in all_opps if o["profit_percent"] >= min_profit],
+            key=lambda x: x["profit_percent"], reverse=True
+        )
+        st.session_state.scan_results = filtered
+        st.session_state.num_events = len(all_events)
+        st.session_state.logged_bets = set()
+
+    filtered = st.session_state.get("scan_results", [])
+    num_events = st.session_state.get("num_events", 0)
+
+    if num_events > 0:
         best_profit = filtered[0]["profit_percent"] if filtered else 0
-        best_cash = round(filtered[0]["profit_units"] * unit_size, 2) if filtered else 0
+        best_units = round(filtered[0]["profit_units"], 4) if filtered else 0
+
         st.markdown(f"""
         <div class="metric-grid">
-            <div class="metric-card"><div class="metric-label">Events Scanned</div><div class="metric-value blue">{len(all_events)}</div></div>
+            <div class="metric-card"><div class="metric-label">Events Scanned</div><div class="metric-value blue">{num_events}</div></div>
             <div class="metric-card"><div class="metric-label">Arbs Found</div><div class="metric-value {'green' if filtered else ''}">{len(filtered)}</div></div>
             <div class="metric-card {'green' if filtered else ''}"><div class="metric-label">Best Profit %</div><div class="metric-value {'green' if filtered else ''}">{best_profit}%</div></div>
-            <div class="metric-card {'green' if filtered else ''}"><div class="metric-label">Best Profit</div><div class="metric-value {'green' if filtered else ''}">£{best_cash}</div></div>
+            <div class="metric-card {'green' if filtered else ''}"><div class="metric-label">Best Profit (units)</div><div class="metric-value {'green' if filtered else ''}">{best_units}</div></div>
         </div>""", unsafe_allow_html=True)
-        if not filtered:
-            st.markdown('<div class="empty-state"><div class="empty-icon">📡</div><div class="empty-title">No opportunities above threshold</div><div class="empty-sub">lower the min profit % or scan again later</div></div>', unsafe_allow_html=True)
-        else:
-            st.markdown(f'<div class="section-label">{len(filtered)} opportunit{"y" if len(filtered)==1 else "ies"} found</div>', unsafe_allow_html=True)
-            worksheet = get_sheet(creds_dict, SHEET_ID) if creds_dict and SHEET_ID else None
-            for i, opp in enumerate(filtered, 1):
-                total_cash = round(opp["total_staked_units"] * unit_size, 2)
-                profit_cash = round(opp["profit_units"] * unit_size, 2)
-                return_cash = round(opp["guaranteed_return_units"] * unit_size, 2)
-                n = len(opp["outcomes"])
-                cols_css = " ".join(["1fr"] * n)
-                bets_html = ""
+
+    if not filtered and num_events == 0:
+        st.markdown('<div class="empty-state"><div class="empty-icon">📡</div><div class="empty-title">Hit Scan to find arbitrage opportunities</div><div class="empty-sub">covers 30+ sports and leagues worldwide</div></div>', unsafe_allow_html=True)
+    elif not filtered:
+        st.markdown('<div class="empty-state"><div class="empty-icon">📡</div><div class="empty-title">No opportunities above threshold</div><div class="empty-sub">lower the min profit % or scan again later</div></div>', unsafe_allow_html=True)
+    else:
+        st.markdown(f'<div class="section-label">{len(filtered)} opportunit{"y" if len(filtered)==1 else "ies"} found</div>', unsafe_allow_html=True)
+        worksheet = get_sheet(creds_dict, SHEET_ID) if creds_dict and SHEET_ID else None
+
+        for i, opp in enumerate(filtered, 1):
+            total_units = opp["total_staked_units"]
+            profit_units = opp["profit_units"]
+            return_units = opp["guaranteed_return_units"]
+            n = len(opp["outcomes"])
+            cols_css = " ".join(["1fr"] * n)
+
+            bets_html = ""
+            for j in range(n):
+                outcome = opp["outcomes"][j]
+                odds = opp["best_odds"][j]
+                book = opp["bookmakers"][j]
+                units = opp["unit_stakes"][j]
+                bets_html += f"""
+                <div class="bet-card">
+                    <div class="bet-outcome">{outcome}</div>
+                    <div class="bet-line"><span class="bet-line-label">Odds</span><span class="bet-line-val val-odds">{odds}</span></div>
+                    <div class="bet-line"><span class="bet-line-label">Suggested units</span><span class="bet-line-val val-units">{units}</span></div>
+                    <div class="book-badge">{book}</div>
+                </div>"""
+
+            already_logged = i in st.session_state.logged_bets
+
+            st.markdown(f"""
+            <div class="opp-card">
+                <div class="opp-header">
+                    <div>
+                        <div class="opp-event">{opp["event"]}</div>
+                        <div class="opp-meta"><span>{opp["sport"]}</span><span>{MARKET_KEYS.get(opp["market"],opp["market"])}</span><span>{opp["commence_time"][:10]}</span></div>
+                    </div>
+                    <div class="profit-pill">+{opp["profit_percent"]}%</div>
+                </div>
+                <div class="stats-row">
+                    <div class="stat-box"><div class="stat-box-label">Arb %</div><div class="stat-box-value">{opp["arb_percent"]}%</div></div>
+                    <div class="stat-box"><div class="stat-box-label">Total units staked</div><div class="stat-box-value">{round(total_units,4)}</div></div>
+                    <div class="stat-box"><div class="stat-box-label">Guaranteed return</div><div class="stat-box-value">{round(return_units,4)} units</div></div>
+                </div>
+                <div class="section-label" style="margin-bottom:10px;">Bets to place</div>
+                <div style="display:grid;grid-template-columns:{cols_css};gap:10px;">{bets_html}</div>
+                <div class="warn-line">Always verify odds on bookmaker site before placing</div>
+            </div>
+            """, unsafe_allow_html=True)
+
+            if already_logged:
+                st.success(f"✅ Bet #{i} already logged this session")
+            elif worksheet:
+                st.markdown('<div class="log-section"><div class="log-section-title">Log this bet to tracker</div>', unsafe_allow_html=True)
+
+                input_cols = st.columns(n)
+                actual_stakes = []
                 for j in range(n):
-                    outcome = opp["outcomes"][j]
-                    odds = opp["best_odds"][j]
-                    book = opp["bookmakers"][j]
-                    units = opp["unit_stakes"][j]
-                    cash = round(units * unit_size, 2)
-                    bets_html += f'<div class="bet-card"><div class="bet-outcome">{outcome}</div><div class="bet-line"><span class="bet-line-label">Odds</span><span class="bet-line-val val-odds">{odds}</span></div><div class="bet-line"><span class="bet-line-label">Units</span><span class="bet-line-val val-units">{units}</span></div><div class="bet-line"><span class="bet-line-label">Stake</span><span class="bet-line-val val-cash">£{cash}</span></div><div class="book-badge">{book}</div></div>'
+                    with input_cols[j]:
+                        suggested = opp["unit_stakes"][j]
+                        stake = st.number_input(
+                            f"{opp['outcomes'][j]} — units staked",
+                            min_value=0.0,
+                            value=float(suggested),
+                            step=0.01,
+                            format="%.4f",
+                            key=f"stake_{i}_{j}"
+                        )
+                        actual_stakes.append(stake)
+
+                total_actual = sum(actual_stakes)
+                total_actual_value = round(total_actual * unit_size, 2)
+                profit_estimate = round(profit_units * unit_size, 2)
+
                 st.markdown(f"""
-                <div class="opp-card">
-                    <div class="opp-header">
-                        <div>
-                            <div class="opp-event">{opp["event"]}</div>
-                            <div class="opp-meta"><span>{opp["sport"]}</span><span>{MARKET_KEYS.get(opp["market"],opp["market"])}</span><span>{opp["commence_time"][:10]}</span></div>
-                        </div>
-                        <div class="profit-pill">+{opp["profit_percent"]}%</div>
+                <div class="log-summary">
+                    <div>
+                        <div class="log-sum-label">Total units</div>
+                        <div class="log-sum-value">{round(total_actual, 4)}</div>
                     </div>
-                    <div class="stats-row">
-                        <div class="stat-box"><div class="stat-box-label">Arb %</div><div class="stat-box-value">{opp["arb_percent"]}%</div></div>
-                        <div class="stat-box"><div class="stat-box-label">Total Stake</div><div class="stat-box-value">£{total_cash}</div></div>
-                        <div class="stat-box"><div class="stat-box-label">Guaranteed Return</div><div class="stat-box-value">£{return_cash}</div></div>
+                    <div>
+                        <div class="log-sum-label">Total value</div>
+                        <div class="log-sum-value">{total_actual_value}</div>
                     </div>
-                    <div class="section-label" style="margin-bottom:10px;">Bets to place</div>
-                    <div style="display:grid;grid-template-columns:{cols_css};gap:10px;">{bets_html}</div>
-                    <div class="warn-line">Always verify odds on bookmaker site before placing</div>
-                </div>""", unsafe_allow_html=True)
-                if worksheet:
-                    if st.button(f"Log Bet to Tracker", key=f"log_{i}"):
-                        if log_bet(worksheet, opp, unit_size):
-                            st.success(f"Bet logged to Google Sheets!")
-                        else:
-                            st.error("Failed to log bet.")
+                    <div>
+                        <div class="log-sum-label">Est. profit</div>
+                        <div class="log-sum-value green">{profit_estimate}</div>
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
+
+                notes = st.text_input("Notes (optional)", key=f"notes_{i}", placeholder="e.g. placed on mobile, odds moved slightly...")
+
+                st.markdown('</div>', unsafe_allow_html=True)
+
+                if st.button(f"✅  LOG BET #{i} TO TRACKER", key=f"log_{i}"):
+                    opp_to_log = dict(opp)
+                    opp_to_log["unit_stakes"] = actual_stakes
+                    opp_to_log["total_staked_units"] = total_actual
+                    if log_bet(worksheet, opp_to_log, unit_size, notes):
+                        st.session_state.logged_bets.add(i)
+                        st.success(f"✅ Bet #{i} logged to Google Sheets!")
+                        st.rerun()
+                    else:
+                        st.error("Failed to log. Check Google Sheets connection.")
+            else:
+                st.info("Add Google Sheets credentials to Streamlit secrets to enable bet logging.")
+
     if auto_refresh:
         time.sleep(refresh_mins * 60)
         st.rerun()
@@ -209,14 +303,14 @@ with tab2:
                 st.markdown('<div class="empty-state"><div class="empty-icon">📊</div><div class="empty-title">No bets logged yet</div><div class="empty-sub">log your first bet from the scanner tab</div></div>', unsafe_allow_html=True)
             else:
                 stats = get_summary_stats(bets, unit_size)
-                irr_display = f"{stats['irr']}%" if stats['irr'] is not None else "Need 2+ settled bets"
+                irr_display = f"{stats['irr']}%" if stats['irr'] is not None else "Need 2+ settled"
                 st.markdown(f"""
                 <div class="metric-grid-6">
-                    <div class="metric-card green"><div class="metric-label">Total Profit</div><div class="metric-value green">£{stats['total_profit']}</div><div class="metric-sub">{stats['settled_bets']} settled bets</div></div>
+                    <div class="metric-card green"><div class="metric-label">Total Profit</div><div class="metric-value green">{stats['total_profit']}</div><div class="metric-sub">{stats['settled_bets']} settled bets</div></div>
                     <div class="metric-card green"><div class="metric-label">ROI</div><div class="metric-value green">{stats['roi']}%</div><div class="metric-sub">return on investment</div></div>
                     <div class="metric-card"><div class="metric-label">IRR Annualised</div><div class="metric-value blue">{irr_display}</div><div class="metric-sub">equiv. annual return</div></div>
-                    <div class="metric-card"><div class="metric-label">Total Staked</div><div class="metric-value">£{stats['total_staked']}</div><div class="metric-sub">capital deployed</div></div>
-                    <div class="metric-card amber"><div class="metric-label">Pending Exposure</div><div class="metric-value amber">£{stats['pending_exposure']}</div><div class="metric-sub">{stats['pending_bets']} open bets</div></div>
+                    <div class="metric-card"><div class="metric-label">Total Staked</div><div class="metric-value">{stats['total_staked']}</div><div class="metric-sub">capital deployed</div></div>
+                    <div class="metric-card amber"><div class="metric-label">Pending Exposure</div><div class="metric-value amber">{stats['pending_exposure']}</div><div class="metric-sub">{stats['pending_bets']} open bets</div></div>
                     <div class="metric-card"><div class="metric-label">Total Bets</div><div class="metric-value blue">{stats['total_bets']}</div><div class="metric-sub">all time</div></div>
                 </div>""", unsafe_allow_html=True)
 
@@ -234,7 +328,7 @@ with tab2:
                         values = [d[1] for d in pnl_data]
                         fig = go.Figure()
                         fig.add_trace(go.Scatter(x=dates, y=values, mode="lines+markers", line=dict(color="#6366f1", width=2), marker=dict(color="#818cf8", size=6), fill="tozeroy", fillcolor="rgba(99,102,241,0.08)"))
-                        fig.update_layout(paper_bgcolor=chart_bg, plot_bgcolor=chart_bg, font=dict(color=font_color, family="JetBrains Mono"), xaxis=dict(gridcolor=grid_color), yaxis=dict(gridcolor=grid_color, tickprefix="£"), margin=dict(l=0,r=0,t=10,b=0), showlegend=False, height=280)
+                        fig.update_layout(paper_bgcolor=chart_bg, plot_bgcolor=chart_bg, font=dict(color=font_color, family="JetBrains Mono"), xaxis=dict(gridcolor=grid_color), yaxis=dict(gridcolor=grid_color), margin=dict(l=0,r=0,t=10,b=0), showlegend=False, height=280)
                         st.plotly_chart(fig, use_container_width=True)
                     else:
                         st.caption("No settled bets yet.")
@@ -294,5 +388,5 @@ with tab3:
                 display_cols = ["Date","Event","Sport","Market","Total Staked","Guaranteed Return","Profit","Profit %","Status","Actual Profit","Notes"]
                 display_cols = [c for c in display_cols if c in df.columns]
                 st.dataframe(df[display_cols], use_container_width=True, hide_index=True)
-                st.caption(f"Showing {len(bets)} bets. Edit Status and Actual Profit directly in your Google Sheet.")
+                st.caption(f"Showing {len(bets)} bets. Edit Status and Actual Profit directly in your Google Sheet to update analytics.")
                 st.link_button("Open Google Sheet", f"https://docs.google.com/spreadsheets/d/{SHEET_ID}")
