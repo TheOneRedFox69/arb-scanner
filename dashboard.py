@@ -112,7 +112,11 @@ section[data-testid="stSidebar"] label{{color:#64748b!important;font-size:10px!i
 .stTabs [data-baseweb="tab-list"]{{background:rgba(99,102,241,0.06)!important;border-radius:10px!important;padding:4px!important;border:1px solid rgba(99,102,241,0.12)!important}}
 .stTabs [data-baseweb="tab"]{{color:#475569!important;font-size:12px!important;font-weight:600!important;border-radius:8px!important}}
 .stTabs [aria-selected="true"]{{background:linear-gradient(135deg,#6366f1,#4f46e5)!important;color:white!important}}
-.stTextInput input,.stNumberInput input,.stSelectbox select,.stTextArea textarea{{background:rgba(99,102,241,0.06)!important;border:1px solid rgba(99,102,241,0.15)!important;border-radius:8px!important;color:#e2e8f0!important;font-family:'JetBrains Mono',monospace!important}}
+.stTextInput input,.stNumberInput input,.stSelectbox select,.stTextArea textarea{{background:rgba(99,102,241,0.06)!important;border:1px solid rgba(99,102,241,0.15)!important;border-radius:8px!important;color:#e2e8f0!important;-webkit-text-fill-color:#e2e8f0!important;font-family:'JetBrains Mono',monospace!important}}
+input[type="number"]{{color:#e2e8f0!important;-webkit-text-fill-color:#e2e8f0!important}}
+input[type="text"]{{color:#e2e8f0!important;-webkit-text-fill-color:#e2e8f0!important}}
+[data-baseweb="input"] input{{color:#e2e8f0!important;-webkit-text-fill-color:#e2e8f0!important}}
+[data-baseweb="base-input"] input{{color:#e2e8f0!important;-webkit-text-fill-color:#e2e8f0!important}}
 .stSlider [data-baseweb="slider"]{{background:rgba(99,102,241,0.15)!important}}
 .metric-grid{{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}}
 .metric-grid-3{{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px}}
@@ -175,7 +179,13 @@ section[data-testid="stSidebar"] label{{color:#64748b!important;font-size:10px!i
 """, unsafe_allow_html=True)
 
 def load_credentials():
-    raw = os.getenv("GOOGLE_CREDENTIALS", "")
+    # Try Streamlit secrets first (production), then env var (local dev)
+    try:
+        raw = st.secrets.get("GOOGLE_CREDENTIALS", "")
+    except Exception:
+        raw = ""
+    if not raw:
+        raw = os.getenv("GOOGLE_CREDENTIALS", "")
     if not raw:
         return None
     try:
@@ -183,7 +193,16 @@ def load_credentials():
     except Exception:
         return None
 
-SHEET_ID = os.getenv("GOOGLE_SHEET_ID", "")
+def load_sheet_id():
+    try:
+        sid = st.secrets.get("GOOGLE_SHEET_ID", "")
+    except Exception:
+        sid = ""
+    if not sid:
+        sid = os.getenv("GOOGLE_SHEET_ID", "")
+    return sid
+
+SHEET_ID = load_sheet_id()
 creds_dict = load_credentials()
 
 @st.cache_resource(ttl=300)
