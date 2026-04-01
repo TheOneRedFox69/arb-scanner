@@ -10,99 +10,206 @@ load_dotenv()
 
 st.set_page_config(
     page_title="ArbScanner Pro",
-    page_icon="🎯",
+    page_icon="⚡",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
-html, body, [class*="css"] {
-    font-family: 'IBM Plex Sans', sans-serif;
-    background-color: #0a0e1a;
+html, body, [class*="css"], .stApp {
+    font-family: 'Inter', sans-serif;
+    background-color: #0f1729 !important;
     color: #e2e8f0;
 }
 
+.stApp {
+    background: linear-gradient(135deg, #0f1729 0%, #111827 50%, #0f1729 100%) !important;
+}
+
 section[data-testid="stSidebar"] {
-    background-color: #0d1117;
-    border-right: 1px solid #1e2d40;
+    background: linear-gradient(180deg, #0a0f1e 0%, #0d1428 100%) !important;
+    border-right: 1px solid rgba(99, 102, 241, 0.15) !important;
 }
 
-section[data-testid="stSidebar"] * {
-    color: #94a3b8 !important;
-}
-
-section[data-testid="stSidebar"] .stSlider label,
-section[data-testid="stSidebar"] .stNumberInput label,
-section[data-testid="stSidebar"] .stTextInput label,
-section[data-testid="stSidebar"] .stMultiSelect label {
+section[data-testid="stSidebar"] label {
     color: #64748b !important;
-    font-size: 11px !important;
+    font-size: 10px !important;
+    font-weight: 600 !important;
     text-transform: uppercase !important;
-    letter-spacing: 0.08em !important;
+    letter-spacing: 0.1em !important;
+}
+
+section[data-testid="stSidebar"] .stTextInput input,
+section[data-testid="stSidebar"] .stNumberInput input {
+    background: rgba(99, 102, 241, 0.08) !important;
+    border: 1px solid rgba(99, 102, 241, 0.2) !important;
+    border-radius: 8px !important;
+    color: #e2e8f0 !important;
+}
+
+section[data-testid="stSidebar"] .stMultiSelect [data-baseweb="select"] {
+    background: rgba(99, 102, 241, 0.08) !important;
+    border: 1px solid rgba(99, 102, 241, 0.2) !important;
 }
 
 .stButton > button {
-    background: linear-gradient(135deg, #0ea5e9, #0284c7);
-    color: white;
-    border: none;
-    border-radius: 6px;
-    padding: 12px 32px;
-    font-family: 'IBM Plex Sans', sans-serif;
-    font-weight: 600;
-    font-size: 14px;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    width: 100%;
-    transition: all 0.2s;
+    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%) !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 12px !important;
+    padding: 14px 32px !important;
+    font-family: 'Inter', sans-serif !important;
+    font-weight: 600 !important;
+    font-size: 13px !important;
+    letter-spacing: 0.08em !important;
+    text-transform: uppercase !important;
+    width: 100% !important;
+    transition: all 0.2s !important;
+    box-shadow: 0 4px 24px rgba(99, 102, 241, 0.3) !important;
 }
 
 .stButton > button:hover {
-    background: linear-gradient(135deg, #38bdf8, #0ea5e9);
-    transform: translateY(-1px);
+    background: linear-gradient(135deg, #818cf8 0%, #6366f1 100%) !important;
+    box-shadow: 0 8px 32px rgba(99, 102, 241, 0.5) !important;
+    transform: translateY(-1px) !important;
 }
 
-.metric-grid {
+.stSpinner > div { border-top-color: #6366f1 !important; }
+
+hr { border-color: rgba(99, 102, 241, 0.15) !important; }
+
+.header-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 0 24px 0;
+    border-bottom: 1px solid rgba(99, 102, 241, 0.15);
+    margin-bottom: 28px;
+}
+
+.header-left { display: flex; align-items: center; gap: 14px; }
+
+.header-logo {
+    width: 44px; height: 44px;
+    background: linear-gradient(135deg, #6366f1, #4f46e5);
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    box-shadow: 0 4px 16px rgba(99, 102, 241, 0.4);
+}
+
+.header-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #f1f5f9;
+    letter-spacing: -0.02em;
+}
+
+.header-sub {
+    font-size: 11px;
+    color: #475569;
+    font-family: 'JetBrains Mono', monospace;
+    margin-top: 2px;
+}
+
+.header-unit {
+    text-align: right;
+    background: rgba(99, 102, 241, 0.08);
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    border-radius: 12px;
+    padding: 10px 18px;
+}
+
+.header-unit-label {
+    font-size: 10px;
+    color: #475569;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 600;
+}
+
+.header-unit-value {
+    font-size: 22px;
+    font-weight: 700;
+    color: #818cf8;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.metrics-row {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 12px;
-    margin: 24px 0;
+    gap: 14px;
+    margin-bottom: 28px;
 }
 
 .metric-card {
-    background: #0d1117;
-    border: 1px solid #1e2d40;
-    border-radius: 8px;
-    padding: 16px 20px;
+    background: linear-gradient(135deg, rgba(99,102,241,0.08) 0%, rgba(79,70,229,0.05) 100%);
+    border: 1px solid rgba(99, 102, 241, 0.15);
+    border-radius: 16px;
+    padding: 18px 20px;
+    position: relative;
+    overflow: hidden;
+}
+
+.metric-card::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #6366f1, #818cf8);
+    opacity: 0.6;
 }
 
 .metric-label {
     font-size: 10px;
+    font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.1em;
     color: #475569;
-    margin-bottom: 6px;
-    font-family: 'IBM Plex Mono', monospace;
+    margin-bottom: 8px;
+    font-family: 'JetBrains Mono', monospace;
 }
 
 .metric-value {
-    font-size: 24px;
-    font-weight: 600;
+    font-size: 28px;
+    font-weight: 700;
     color: #e2e8f0;
-    font-family: 'IBM Plex Mono', monospace;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: -0.02em;
 }
 
-.metric-value.positive { color: #10b981; }
-.metric-value.highlight { color: #0ea5e9; }
+.metric-value.green { color: #34d399; }
+.metric-value.blue { color: #818cf8; }
+
+.section-label {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: #475569;
+    margin-bottom: 14px;
+    font-family: 'JetBrains Mono', monospace;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba(99, 102, 241, 0.15);
+}
 
 .opp-card {
-    background: #0d1117;
-    border: 1px solid #1e2d40;
-    border-radius: 10px;
-    padding: 20px 24px;
-    margin-bottom: 16px;
+    background: linear-gradient(135deg, rgba(15,23,41,0.9) 0%, rgba(13,20,40,0.95) 100%);
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    border-radius: 16px;
+    padding: 22px 24px;
+    margin-bottom: 14px;
     position: relative;
     overflow: hidden;
 }
@@ -110,271 +217,256 @@ section[data-testid="stSidebar"] .stMultiSelect label {
 .opp-card::before {
     content: '';
     position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
+    left: 0; top: 0; bottom: 0;
     width: 3px;
-    background: linear-gradient(180deg, #10b981, #0ea5e9);
+    background: linear-gradient(180deg, #6366f1, #34d399);
+    border-radius: 3px 0 0 3px;
 }
 
-.opp-header {
+.opp-card-header {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-bottom: 16px;
+    margin-bottom: 18px;
 }
 
-.opp-event {
+.opp-event-name {
     font-size: 16px;
     font-weight: 600;
-    color: #e2e8f0;
-    margin-bottom: 4px;
+    color: #f1f5f9;
+    margin-bottom: 5px;
+    letter-spacing: -0.01em;
 }
 
 .opp-meta {
-    font-size: 12px;
+    font-size: 11px;
     color: #475569;
-    font-family: 'IBM Plex Mono', monospace;
+    font-family: 'JetBrains Mono', monospace;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
 }
 
-.profit-badge {
-    background: rgba(16, 185, 129, 0.15);
-    border: 1px solid rgba(16, 185, 129, 0.3);
-    color: #10b981;
-    padding: 6px 14px;
-    border-radius: 20px;
-    font-size: 13px;
-    font-weight: 600;
-    font-family: 'IBM Plex Mono', monospace;
+.opp-meta span {
+    background: rgba(99, 102, 241, 0.08);
+    border: 1px solid rgba(99, 102, 241, 0.15);
+    padding: 2px 8px;
+    border-radius: 4px;
+}
+
+.profit-pill {
+    background: linear-gradient(135deg, rgba(52,211,153,0.2), rgba(16,185,129,0.1));
+    border: 1px solid rgba(52, 211, 153, 0.35);
+    color: #34d399;
+    padding: 8px 16px;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 700;
+    font-family: 'JetBrains Mono', monospace;
     white-space: nowrap;
+    letter-spacing: -0.01em;
 }
 
-.opp-stats {
+.stats-row {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
+    gap: 10px;
     margin-bottom: 20px;
-    padding: 14px;
-    background: #070b14;
-    border-radius: 6px;
-    border: 1px solid #131c2e;
 }
 
-.stat-item { text-align: center; }
+.stat-box {
+    background: rgba(99, 102, 241, 0.06);
+    border: 1px solid rgba(99, 102, 241, 0.12);
+    border-radius: 10px;
+    padding: 12px 14px;
+    text-align: center;
+}
 
-.stat-label {
-    font-size: 10px;
+.stat-box-label {
+    font-size: 9px;
+    font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.1em;
     color: #334155;
-    margin-bottom: 4px;
-    font-family: 'IBM Plex Mono', monospace;
+    margin-bottom: 5px;
+    font-family: 'JetBrains Mono', monospace;
 }
 
-.stat-value {
-    font-size: 15px;
-    font-weight: 500;
+.stat-box-value {
+    font-size: 14px;
+    font-weight: 600;
     color: #94a3b8;
-    font-family: 'IBM Plex Mono', monospace;
+    font-family: 'JetBrains Mono', monospace;
 }
 
-.bets-grid {
-    display: grid;
-    gap: 10px;
+.bets-label {
+    font-size: 9px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #334155;
+    margin-bottom: 10px;
+    font-family: 'JetBrains Mono', monospace;
 }
 
-.bet-row {
-    display: grid;
-    gap: 10px;
-    align-items: center;
-}
-
-.bet-cell {
-    background: #070b14;
-    border: 1px solid #131c2e;
-    border-radius: 6px;
+.bet-card {
+    background: rgba(99, 102, 241, 0.05);
+    border: 1px solid rgba(99, 102, 241, 0.12);
+    border-radius: 12px;
     padding: 14px 16px;
 }
 
-.bet-outcome {
+.bet-outcome-name {
     font-size: 13px;
     font-weight: 600;
     color: #cbd5e1;
-    margin-bottom: 10px;
+    margin-bottom: 12px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
-.bet-detail {
+.bet-line {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 4px;
+    align-items: center;
+    margin-bottom: 5px;
 }
 
-.bet-detail-label {
-    font-size: 10px;
+.bet-line-label {
+    font-size: 9px;
+    font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.08em;
     color: #334155;
-    font-family: 'IBM Plex Mono', monospace;
+    font-family: 'JetBrains Mono', monospace;
 }
 
-.bet-detail-value {
+.bet-line-val {
     font-size: 13px;
-    font-weight: 500;
-    font-family: 'IBM Plex Mono', monospace;
-    color: #94a3b8;
-}
-
-.bet-detail-value.odds { color: #0ea5e9; }
-.bet-detail-value.stake { color: #10b981; }
-
-.bookmaker-tag {
-    display: inline-block;
-    margin-top: 8px;
-    font-size: 10px;
-    color: #475569;
-    background: #0d1117;
-    border: 1px solid #1e2d40;
-    padding: 2px 8px;
-    border-radius: 4px;
-    font-family: 'IBM Plex Mono', monospace;
-}
-
-.warning-text {
-    font-size: 11px;
-    color: #334155;
-    text-align: center;
-    margin-top: 16px;
-    font-family: 'IBM Plex Mono', monospace;
-}
-
-.no-opps {
-    text-align: center;
-    padding: 60px 20px;
-    color: #334155;
-}
-
-.no-opps-icon {
-    font-size: 40px;
-    margin-bottom: 16px;
-}
-
-.no-opps-text {
-    font-size: 16px;
-    color: #475569;
-    margin-bottom: 8px;
-}
-
-.no-opps-sub {
-    font-size: 13px;
-    color: #334155;
-    font-family: 'IBM Plex Mono', monospace;
-}
-
-.header-bar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding-bottom: 20px;
-    border-bottom: 1px solid #1e2d40;
-    margin-bottom: 24px;
-}
-
-.header-title {
-    font-size: 22px;
     font-weight: 600;
-    color: #e2e8f0;
-    letter-spacing: -0.02em;
+    font-family: 'JetBrains Mono', monospace;
 }
 
-.header-subtitle {
+.val-odds { color: #818cf8; }
+.val-units { color: #94a3b8; }
+.val-cash { color: #34d399; }
+
+.book-badge {
+    margin-top: 10px;
+    display: inline-block;
+    font-size: 9px;
+    color: #475569;
+    background: rgba(15, 23, 41, 0.8);
+    border: 1px solid rgba(99, 102, 241, 0.12);
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-family: 'JetBrains Mono', monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.warn-line {
+    font-size: 10px;
+    color: #334155;
+    text-align: center;
+    margin-top: 18px;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 64px 20px;
+}
+
+.empty-icon { font-size: 36px; margin-bottom: 14px; }
+
+.empty-title {
+    font-size: 16px;
+    font-weight: 500;
+    color: #475569;
+    margin-bottom: 6px;
+}
+
+.empty-sub {
     font-size: 12px;
     color: #334155;
-    font-family: 'IBM Plex Mono', monospace;
-    margin-top: 2px;
+    font-family: 'JetBrains Mono', monospace;
 }
 
-.status-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: #10b981;
-    display: inline-block;
-    margin-right: 6px;
-    box-shadow: 0 0 6px #10b981;
+.sidebar-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #818cf8 !important;
+    letter-spacing: -0.01em;
+    margin-bottom: 4px;
 }
 
-.section-title {
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: #334155;
-    margin-bottom: 12px;
-    font-family: 'IBM Plex Mono', monospace;
+.sidebar-sub {
+    font-size: 10px;
+    color: #334155 !important;
+    font-family: 'JetBrains Mono', monospace;
+    margin-bottom: 16px;
 }
-
-div[data-testid="stExpander"] {
-    background: transparent !important;
-    border: none !important;
-}
-
-.stAlert { display: none; }
 </style>
 """, unsafe_allow_html=True)
 
-# ── Sidebar ──────────────────────────────────────────────────────────────────
+# ── Sidebar ───────────────────────────────────────────────────────────────────
 
 with st.sidebar:
-    st.markdown("### ArbScanner Pro")
-    st.markdown("---")
+    st.markdown('<div class="sidebar-title">⚡ ArbScanner Pro</div>', unsafe_allow_html=True)
+    st.markdown('<div class="sidebar-sub">Sports Arbitrage Scanner</div>', unsafe_allow_html=True)
+    st.divider()
 
     api_key = st.text_input("Odds API Key", value=os.getenv("ODDS_API_KEY", ""), type="password")
     unit_size = st.number_input("Unit Size (£)", min_value=1.0, max_value=10000.0, value=10.0, step=1.0,
-        help="Each unit stake is multiplied by this. E.g. unit size 50 means 1.0 unit = £50")
+        help="1 unit = this amount. E.g. unit size £50 means stake of 2.3 units = £115")
     min_profit = st.slider("Min Profit %", min_value=0.0, max_value=5.0, value=0.5, step=0.1)
 
-    st.markdown("---")
+    st.divider()
     selected_markets = st.multiselect("Markets",
         options=list(MARKET_KEYS.keys()),
         default=list(MARKET_KEYS.keys()),
         format_func=lambda k: MARKET_KEYS[k])
 
-    st.markdown("---")
+    st.divider()
     auto_refresh = st.toggle("Auto-refresh", value=False)
     refresh_mins = st.number_input("Interval (mins)", min_value=5, max_value=120, value=60, disabled=not auto_refresh)
 
-# ── Header ───────────────────────────────────────────────────────────────────
+# ── Header ────────────────────────────────────────────────────────────────────
 
 st.markdown(f"""
-<div class="header-bar">
-    <div>
-        <div class="header-title">⚡ ArbScanner Pro</div>
-        <div class="header-subtitle">Last scan: {datetime.now().strftime("%d %b %Y %H:%M:%S UTC")}</div>
+<div class="header-wrap">
+    <div class="header-left">
+        <div class="header-logo">⚡</div>
+        <div>
+            <div class="header-title">ArbScanner Pro</div>
+            <div class="header-sub">{datetime.now().strftime("%d %b %Y · %H:%M:%S UTC")}</div>
+        </div>
     </div>
-    <div style="text-align:right">
-        <div style="font-size:12px; color:#334155; font-family:'IBM Plex Mono',monospace;">Unit size</div>
-        <div style="font-size:20px; font-weight:600; color:#0ea5e9; font-family:'IBM Plex Mono',monospace;">£{unit_size:.0f}</div>
+    <div class="header-unit">
+        <div class="header-unit-label">Unit Size</div>
+        <div class="header-unit-value">£{unit_size:.0f}</div>
     </div>
 </div>
 """, unsafe_allow_html=True)
 
 if not api_key:
     st.markdown("""
-    <div class="no-opps">
-        <div class="no-opps-icon">🔑</div>
-        <div class="no-opps-text">Enter your Odds API key in the sidebar to begin</div>
+    <div class="empty-state">
+        <div class="empty-icon">🔑</div>
+        <div class="empty-title">Enter your Odds API key in the sidebar</div>
+        <div class="empty-sub">get your key at the-odds-api.com</div>
     </div>
     """, unsafe_allow_html=True)
     st.stop()
 
-scan_clicked = st.button("⚡ SCAN MARKETS", type="primary")
+scan_clicked = st.button("⚡  SCAN MARKETS NOW")
 
-# ── Scan ─────────────────────────────────────────────────────────────────────
+# ── Scan ──────────────────────────────────────────────────────────────────────
 
 if scan_clicked or auto_refresh:
-    with st.spinner("Connecting to odds feeds..."):
+    with st.spinner("Connecting to live odds feeds..."):
         all_events = fetch_all_sports(api_key)
 
     if not all_events:
@@ -402,51 +494,47 @@ if scan_clicked or auto_refresh:
         reverse=True
     )
 
-    # ── Metrics ──────────────────────────────────────────────────────────────
-
     best_profit = filtered[0]["profit_percent"] if filtered else 0
     best_cash = round(filtered[0]["profit_units"] * unit_size, 2) if filtered else 0
 
     st.markdown(f"""
-    <div class="metric-grid">
+    <div class="metrics-row">
         <div class="metric-card">
             <div class="metric-label">Events Scanned</div>
-            <div class="metric-value highlight">{len(all_events)}</div>
+            <div class="metric-value blue">{len(all_events)}</div>
         </div>
         <div class="metric-card">
             <div class="metric-label">Arbs Found</div>
-            <div class="metric-value {'positive' if filtered else ''}">{len(filtered)}</div>
+            <div class="metric-value {'green' if filtered else ''}">{len(filtered)}</div>
         </div>
         <div class="metric-card">
             <div class="metric-label">Best Profit %</div>
-            <div class="metric-value {'positive' if filtered else ''}">{best_profit}%</div>
+            <div class="metric-value {'green' if filtered else ''}">{best_profit}%</div>
         </div>
         <div class="metric-card">
             <div class="metric-label">Best Profit £</div>
-            <div class="metric-value {'positive' if filtered else ''}">£{best_cash}</div>
+            <div class="metric-value {'green' if filtered else ''}">£{best_cash}</div>
         </div>
     </div>
     """, unsafe_allow_html=True)
 
-    # ── Opportunities ─────────────────────────────────────────────────────────
-
     if not filtered:
         st.markdown("""
-        <div class="no-opps">
-            <div class="no-opps-icon">📡</div>
-            <div class="no-opps-text">No opportunities above threshold</div>
-            <div class="no-opps-sub">Try lowering the min profit % or scan again later</div>
+        <div class="empty-state">
+            <div class="empty-icon">📡</div>
+            <div class="empty-title">No opportunities above threshold</div>
+            <div class="empty-sub">lower the min profit % or scan again later</div>
         </div>
         """, unsafe_allow_html=True)
     else:
-        st.markdown(f'<div class="section-title">{len(filtered)} opportunit{"y" if len(filtered)==1 else "ies"} found</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="section-label">{len(filtered)} opportunit{"y" if len(filtered)==1 else "ies"} found</div>', unsafe_allow_html=True)
 
         for i, opp in enumerate(filtered, 1):
             total_cash = round(opp["total_staked_units"] * unit_size, 2)
             profit_cash = round(opp["profit_units"] * unit_size, 2)
             return_cash = round(opp["guaranteed_return_units"] * unit_size, 2)
             n = len(opp["outcomes"])
-            grid_cols = " ".join(["1fr"] * n)
+            cols_css = " ".join(["1fr"] * n)
 
             bets_html = ""
             for j in range(n):
@@ -456,55 +544,57 @@ if scan_clicked or auto_refresh:
                 units = opp["unit_stakes"][j]
                 cash = round(units * unit_size, 2)
                 bets_html += f"""
-                <div class="bet-cell">
-                    <div class="bet-outcome">{outcome}</div>
-                    <div class="bet-detail">
-                        <span class="bet-detail-label">Odds</span>
-                        <span class="bet-detail-value odds">{odds}</span>
+                <div class="bet-card">
+                    <div class="bet-outcome-name">{outcome}</div>
+                    <div class="bet-line">
+                        <span class="bet-line-label">Odds</span>
+                        <span class="bet-line-val val-odds">{odds}</span>
                     </div>
-                    <div class="bet-detail">
-                        <span class="bet-detail-label">Units</span>
-                        <span class="bet-detail-value">{units}</span>
+                    <div class="bet-line">
+                        <span class="bet-line-label">Units</span>
+                        <span class="bet-line-val val-units">{units}</span>
                     </div>
-                    <div class="bet-detail">
-                        <span class="bet-detail-label">Stake</span>
-                        <span class="bet-detail-value stake">£{cash}</span>
+                    <div class="bet-line">
+                        <span class="bet-line-label">Stake</span>
+                        <span class="bet-line-val val-cash">£{cash}</span>
                     </div>
-                    <div class="bookmaker-tag">{book}</div>
-                </div>
-                """
+                    <div class="book-badge">{book}</div>
+                </div>"""
 
             st.markdown(f"""
             <div class="opp-card">
-                <div class="opp-header">
+                <div class="opp-card-header">
                     <div>
-                        <div class="opp-event">{opp["event"]}</div>
-                        <div class="opp-meta">{opp["sport"]} &nbsp;·&nbsp; {MARKET_KEYS.get(opp["market"], opp["market"])} &nbsp;·&nbsp; {opp["commence_time"][:10]}</div>
+                        <div class="opp-event-name">{opp["event"]}</div>
+                        <div class="opp-meta">
+                            <span>{opp["sport"]}</span>
+                            <span>{MARKET_KEYS.get(opp["market"], opp["market"])}</span>
+                            <span>{opp["commence_time"][:10]}</span>
+                        </div>
                     </div>
-                    <div class="profit-badge">+{opp["profit_percent"]}%</div>
+                    <div class="profit-pill">+{opp["profit_percent"]}%</div>
                 </div>
 
-                <div class="opp-stats">
-                    <div class="stat-item">
-                        <div class="stat-label">Arb %</div>
-                        <div class="stat-value">{opp["arb_percent"]}%</div>
+                <div class="stats-row">
+                    <div class="stat-box">
+                        <div class="stat-box-label">Arb %</div>
+                        <div class="stat-box-value">{opp["arb_percent"]}%</div>
                     </div>
-                    <div class="stat-item">
-                        <div class="stat-label">Total Stake</div>
-                        <div class="stat-value">£{total_cash}</div>
+                    <div class="stat-box">
+                        <div class="stat-box-label">Total Stake</div>
+                        <div class="stat-box-value">£{total_cash}</div>
                     </div>
-                    <div class="stat-item">
-                        <div class="stat-label">Guaranteed Return</div>
-                        <div class="stat-value">£{return_cash}</div>
+                    <div class="stat-box">
+                        <div class="stat-box-label">Return</div>
+                        <div class="stat-box-value">£{return_cash}</div>
                     </div>
                 </div>
 
-                <div class="section-title">Bets to place</div>
-                <div class="bet-row" style="grid-template-columns: {grid_cols};">
+                <div class="bets-label">Bets to place</div>
+                <div style="display:grid; grid-template-columns:{cols_css}; gap:10px;">
                     {bets_html}
                 </div>
-
-                <div class="warning-text">⚠ Verify odds on bookmaker site before placing — prices change rapidly</div>
+                <div class="warn-line">⚠ Always verify odds on bookmaker site before placing — prices change rapidly</div>
             </div>
             """, unsafe_allow_html=True)
 
