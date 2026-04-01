@@ -223,9 +223,9 @@ with st.sidebar:
     st.markdown("### ⚡ ArbScanner Pro")
     st.divider()
     api_key = st.text_input("Odds API Key", value=os.getenv("ODDS_API_KEY", ""), type="password")
-    st.markdown(tooltip("unit_size", "Unit Size"), unsafe_allow_html=True)
-    unit_size = st.number_input("", min_value=1, max_value=100000, value=10, step=1, key="unit_size_input",
-        label_visibility="collapsed")
+    st.markdown(tooltip("unit_size", "Unit Size ($ per unit)"), unsafe_allow_html=True)
+    unit_size = st.number_input("Unit Size $ per unit", min_value=1, max_value=100000, value=10, step=1, key="unit_size_input",
+        help="The dollar value of 1 unit. E.g. $10 means a 2.3 unit stake = $23.")
     st.markdown(tooltip("arb_percent", "Min Profit %"), unsafe_allow_html=True)
     min_profit = st.slider("", min_value=0.0, max_value=5.0, value=0.5, step=0.1, key="min_profit_slider",
         label_visibility="collapsed")
@@ -532,7 +532,7 @@ with tab3:
                 <div class="metric-card"><div class="metric-label">{tooltip("irr","IRR Annualised")}</div><div class="metric-value blue">{irr_display}</div><div class="metric-sub">equiv. annual return</div></div>
                 <div class="metric-card"><div class="metric-label">Total Staked</div><div class="metric-value">{stats['total_staked']}</div><div class="metric-sub">capital deployed</div></div>
                 <div class="metric-card amber"><div class="metric-label">{tooltip("pending_exposure","Pending Exposure")}</div><div class="metric-value amber">{stats['pending_exposure']}</div><div class="metric-sub">{stats['pending_bets']} open bets</div></div>
-                <div class="metric-card"><div class="metric-label">{tooltip("break_even","Break-even bets/mo")}</div><div class="metric-value blue">{be_display}</div><div class="metric-sub">{be_sub}</div></div>
+                <div class="metric-card"><div class="metric-label">{tooltip("break_even","Break-even bets/mo")}</div><div class="metric-value blue">{be_display}</div><div class="metric-sub">{be_sub}</div><div class="metric-sub" style="color:#334155;font-size:9px;margin-top:4px;">Assumes 1 unit = ${unit_size}. Adjust unit size in sidebar to match your currency.</div></div>
             </div>""", unsafe_allow_html=True)
 
             import plotly.graph_objects as go
