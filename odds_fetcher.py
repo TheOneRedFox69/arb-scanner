@@ -14,9 +14,9 @@ from datetime import datetime
 # "h2h" = match winner / moneyline
 # Soccer uses 1X2 (3-way: home/draw/away); others use h2h (2-way)
 SPORTS_CONFIG = {
-    "soccer_epl":           {"name": "Soccer - EPL",        "markets": ["h2h", "btts"]},
-    "soccer_uefa_champs_league": {"name": "Soccer - UCL",   "markets": ["h2h", "btts"]},
-    "soccer_spain_la_liga": {"name": "Soccer - La Liga",    "markets": ["h2h", "btts"]},
+    "soccer_epl":           {"name": "Soccer - EPL",        "markets": ["h2h"]},
+    "soccer_uefa_champs_league": {"name": "Soccer - UCL",   "markets": ["h2h"]},
+    "soccer_spain_la_liga": {"name": "Soccer - La Liga",    "markets": ["h2h"]},
     "americanfootball_nfl": {"name": "NFL",                 "markets": ["h2h", "totals"]},
     "basketball_nba":       {"name": "NBA",                 "markets": ["h2h", "totals"]},
     "tennis_atp_french_open": {"name": "Tennis - ATP",      "markets": ["h2h"]},
