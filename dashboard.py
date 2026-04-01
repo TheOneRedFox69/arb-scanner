@@ -435,6 +435,8 @@ with tab2:
             st.error("Could not connect to Google Sheets.")
         else:
             st.caption("Use this form to log any arbitrage bet placed manually or missed by the scanner.")
+            num_outcomes_choice = st.radio("Number of outcomes", options=["2 outcomes (no draw)", "3 outcomes (win / draw / lose)"], horizontal=True, help="Choose 2 for NBA/MLB/Tennis. Choose 3 for soccer.")
+            num_outcomes = 3 if "3" in num_outcomes_choice else 2
             with st.form("retro_bet_form", clear_on_submit=True):
                 col1, col2 = st.columns(2)
                 with col1:
@@ -446,8 +448,6 @@ with tab2:
                     retro_profit_pct = st.number_input("Profit % at time of placing", min_value=0.0, max_value=20.0, value=1.0, step=0.01, format="%.3f")
                     retro_notes = st.text_input("Notes", placeholder="e.g. placed manually, scanner offline...")
                 st.divider()
-                num_outcomes_choice = st.radio("Number of outcomes", options=["2 outcomes (no draw)", "3 outcomes (win / draw / lose)"], horizontal=True, help="Choose 2 for NBA/MLB/Tennis. Choose 3 for soccer.")
-                num_outcomes = 3 if "3" in num_outcomes_choice else 2
                 outcome_data = []
                 out_cols = st.columns(num_outcomes)
                 placeholders = [
