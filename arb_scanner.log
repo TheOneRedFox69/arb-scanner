@@ -1,0 +1,112 @@
+2026-03-31 23:30:08,134 [INFO] Fetching: Soccer - EPL...
+2026-03-31 23:30:09,044 [INFO] API quota — Used: 0, Remaining: 500
+2026-03-31 23:30:09,044 [ERROR] API error 422 for soccer_epl: {"message":"Markets not supported by this endpoint: btts","error_code":"INVALID_MARKET","details_url":"https://the-odds-api.com/liveapi/guides/v4/api-error-codes.html#invalid-market"}
+
+2026-03-31 23:30:09,046 [INFO] Fetching: Soccer - UCL...
+2026-03-31 23:30:10,015 [INFO] API quota — Used: 0, Remaining: 500
+2026-03-31 23:30:10,015 [ERROR] API error 422 for soccer_uefa_champs_league: {"message":"Markets not supported by this endpoint: btts","error_code":"INVALID_MARKET","details_url":"https://the-odds-api.com/liveapi/guides/v4/api-error-codes.html#invalid-market"}
+
+2026-03-31 23:30:10,016 [INFO] Fetching: Soccer - La Liga...
+2026-03-31 23:30:10,713 [INFO] API quota — Used: 0, Remaining: 500
+2026-03-31 23:30:10,714 [ERROR] API error 422 for soccer_spain_la_liga: {"message":"Markets not supported by this endpoint: btts","error_code":"INVALID_MARKET","details_url":"https://the-odds-api.com/liveapi/guides/v4/api-error-codes.html#invalid-market"}
+
+2026-03-31 23:30:10,715 [INFO] Fetching: NFL...
+2026-03-31 23:30:11,865 [INFO] API quota — Used: 0, Remaining: 500
+2026-03-31 23:30:11,865 [INFO] Fetched 0 events for americanfootball_nfl
+2026-03-31 23:30:11,867 [INFO] Fetching: NBA...
+2026-03-31 23:30:14,793 [INFO] API quota — Used: 8, Remaining: 492
+2026-03-31 23:30:14,797 [INFO] Fetched 10 events for basketball_nba
+2026-03-31 23:30:14,798 [INFO] Fetching: Tennis - ATP...
+2026-03-31 23:30:15,992 [INFO] API quota — Used: 8, Remaining: 492
+2026-03-31 23:30:15,992 [INFO] Fetched 0 events for tennis_atp_french_open
+2026-03-31 23:30:15,994 [INFO] Fetching: MLB...
+2026-03-31 23:30:20,664 [INFO] API quota — Used: 16, Remaining: 484
+2026-03-31 23:30:20,669 [INFO] Fetched 28 events for baseball_mlb
+2026-03-31 23:30:20,670 [INFO] Total events fetched: 38
+2026-03-31 23:33:07,869 [INFO] Fetching: Soccer - EPL...
+2026-03-31 23:33:08,527 [INFO] API quota — Used: 16, Remaining: 484
+2026-03-31 23:33:08,527 [ERROR] API error 422 for soccer_epl: {"message":"Markets not supported by this endpoint: btts","error_code":"INVALID_MARKET","details_url":"https://the-odds-api.com/liveapi/guides/v4/api-error-codes.html#invalid-market"}
+
+2026-03-31 23:33:08,529 [INFO] Fetching: Soccer - UCL...
+2026-03-31 23:33:09,212 [INFO] API quota — Used: 16, Remaining: 484
+2026-03-31 23:33:09,213 [ERROR] API error 422 for soccer_uefa_champs_league: {"message":"Markets not supported by this endpoint: btts","error_code":"INVALID_MARKET","details_url":"https://the-odds-api.com/liveapi/guides/v4/api-error-codes.html#invalid-market"}
+
+2026-03-31 23:33:09,214 [INFO] Fetching: Soccer - La Liga...
+2026-03-31 23:33:09,869 [INFO] API quota — Used: 16, Remaining: 484
+2026-03-31 23:33:09,870 [ERROR] API error 422 for soccer_spain_la_liga: {"message":"Markets not supported by this endpoint: btts","error_code":"INVALID_MARKET","details_url":"https://the-odds-api.com/liveapi/guides/v4/api-error-codes.html#invalid-market"}
+
+2026-03-31 23:33:09,871 [INFO] Fetching: NFL...
+2026-03-31 23:33:10,504 [INFO] API quota — Used: 16, Remaining: 484
+2026-03-31 23:33:10,504 [INFO] Fetched 0 events for americanfootball_nfl
+2026-03-31 23:33:10,505 [INFO] Fetching: NBA...
+2026-03-31 23:33:11,191 [INFO] API quota — Used: 24, Remaining: 476
+2026-03-31 23:33:11,197 [INFO] Fetched 10 events for basketball_nba
+2026-03-31 23:33:11,199 [INFO] Fetching: Tennis - ATP...
+2026-03-31 23:33:11,872 [INFO] API quota — Used: 24, Remaining: 476
+2026-03-31 23:33:11,872 [INFO] Fetched 0 events for tennis_atp_french_open
+2026-03-31 23:33:11,874 [INFO] Fetching: MLB...
+2026-03-31 23:33:12,862 [INFO] API quota — Used: 32, Remaining: 468
+2026-03-31 23:33:12,869 [INFO] Fetched 28 events for baseball_mlb
+2026-03-31 23:33:12,871 [INFO] Total events fetched: 38
+2026-03-31 23:34:47,631 [INFO] Fetching: Soccer - EPL...
+2026-03-31 23:34:48,289 [INFO] API quota — Used: 32, Remaining: 468
+2026-03-31 23:34:48,289 [ERROR] API error 422 for soccer_epl: {"message":"Markets not supported by this endpoint: btts","error_code":"INVALID_MARKET","details_url":"https://the-odds-api.com/liveapi/guides/v4/api-error-codes.html#invalid-market"}
+
+2026-03-31 23:34:48,291 [INFO] Fetching: Soccer - UCL...
+2026-03-31 23:34:48,969 [INFO] API quota — Used: 32, Remaining: 468
+2026-03-31 23:34:48,970 [ERROR] API error 422 for soccer_uefa_champs_league: {"message":"Markets not supported by this endpoint: btts","error_code":"INVALID_MARKET","details_url":"https://the-odds-api.com/liveapi/guides/v4/api-error-codes.html#invalid-market"}
+
+2026-03-31 23:34:48,971 [INFO] Fetching: Soccer - La Liga...
+2026-03-31 23:34:49,737 [INFO] API quota — Used: 32, Remaining: 468
+2026-03-31 23:34:49,738 [ERROR] API error 422 for soccer_spain_la_liga: {"message":"Markets not supported by this endpoint: btts","error_code":"INVALID_MARKET","details_url":"https://the-odds-api.com/liveapi/guides/v4/api-error-codes.html#invalid-market"}
+
+2026-03-31 23:34:49,739 [INFO] Fetching: NFL...
+2026-03-31 23:34:50,417 [INFO] API quota — Used: 32, Remaining: 468
+2026-03-31 23:34:50,417 [INFO] Fetched 0 events for americanfootball_nfl
+2026-03-31 23:34:50,418 [INFO] Fetching: NBA...
+2026-03-31 23:34:51,160 [INFO] API quota — Used: 40, Remaining: 460
+2026-03-31 23:34:51,162 [INFO] Fetched 10 events for basketball_nba
+2026-03-31 23:34:51,163 [INFO] Fetching: Tennis - ATP...
+2026-03-31 23:34:51,860 [INFO] API quota — Used: 40, Remaining: 460
+2026-03-31 23:34:51,860 [INFO] Fetched 0 events for tennis_atp_french_open
+2026-03-31 23:34:51,862 [INFO] Fetching: MLB...
+2026-03-31 23:34:52,790 [INFO] API quota — Used: 48, Remaining: 452
+2026-03-31 23:34:52,794 [INFO] Fetched 28 events for baseball_mlb
+2026-03-31 23:34:52,795 [INFO] Total events fetched: 38
+2026-03-31 23:34:52,796 [INFO] ARB FOUND: Orlando Magic vs Phoenix Suns | h2h | 7.355% profit
+2026-03-31 23:34:52,799 [INFO] ARB FOUND: Brooklyn Nets vs Charlotte Hornets | h2h | 0.09% profit
+2026-03-31 23:34:52,810 [INFO] ARB FOUND: Utah Jazz vs Denver Nuggets | h2h | 0.696% profit
+2026-03-31 23:34:52,811 [INFO] ARB FOUND: Baltimore Orioles vs Texas Rangers | h2h | 2.357% profit
+2026-03-31 23:34:52,812 [INFO] ARB FOUND: Miami Marlins vs Chicago White Sox | h2h | 0.174% profit
+2026-03-31 23:34:52,813 [WARNING] Skipping suspicious opportunity: Cincinnati Reds vs Pittsburgh Pirates | h2h | arb=0.8760 | odds=[1.3, 9.37] | books=['Paddy Power', 'Pinnacle']
+2026-03-31 23:34:52,814 [INFO] ARB FOUND: Philadelphia Phillies vs Washington Nationals | h2h | 4.187% profit
+2026-03-31 23:34:52,815 [INFO] ARB FOUND: Toronto Blue Jays vs Colorado Rockies | h2h | 0.166% profit
+2026-03-31 23:34:52,816 [WARNING] Skipping suspicious opportunity: Atlanta Braves vs Athletics | h2h | arb=0.9114 | odds=[3.4, 1.62] | books=['Betfair', 'William Hill']
+2026-03-31 23:34:52,821 [INFO] ARB FOUND: Houston Astros vs Boston Red Sox | h2h | 0.304% profit
+2026-04-01 00:01:18,059 [INFO] Fetching: Soccer - EPL...
+2026-04-01 00:01:18,838 [INFO] API quota — Used: 48, Remaining: 452
+2026-04-01 00:01:18,838 [ERROR] API error 422 for soccer_epl: {"message":"Markets not supported by this endpoint: btts","error_code":"INVALID_MARKET","details_url":"https://the-odds-api.com/liveapi/guides/v4/api-error-codes.html#invalid-market"}
+
+2026-04-01 00:01:18,840 [INFO] Fetching: Soccer - UCL...
+2026-04-01 00:01:19,527 [INFO] API quota — Used: 48, Remaining: 452
+2026-04-01 00:01:19,527 [ERROR] API error 422 for soccer_uefa_champs_league: {"message":"Markets not supported by this endpoint: btts","error_code":"INVALID_MARKET","details_url":"https://the-odds-api.com/liveapi/guides/v4/api-error-codes.html#invalid-market"}
+
+2026-04-01 00:01:19,528 [INFO] Fetching: Soccer - La Liga...
+2026-04-01 00:01:20,219 [INFO] API quota — Used: 48, Remaining: 452
+2026-04-01 00:01:20,219 [ERROR] API error 422 for soccer_spain_la_liga: {"message":"Markets not supported by this endpoint: btts","error_code":"INVALID_MARKET","details_url":"https://the-odds-api.com/liveapi/guides/v4/api-error-codes.html#invalid-market"}
+
+2026-04-01 00:01:20,221 [INFO] Fetching: NFL...
+2026-04-01 00:01:20,917 [INFO] API quota — Used: 48, Remaining: 452
+2026-04-01 00:01:20,917 [INFO] Fetched 0 events for americanfootball_nfl
+2026-04-01 00:01:20,918 [INFO] Fetching: NBA...
+2026-04-01 00:01:21,635 [INFO] API quota — Used: 56, Remaining: 444
+2026-04-01 00:01:21,638 [INFO] Fetched 11 events for basketball_nba
+2026-04-01 00:01:21,639 [INFO] Fetching: Tennis - ATP...
+2026-04-01 00:01:22,324 [INFO] API quota — Used: 56, Remaining: 444
+2026-04-01 00:01:22,325 [INFO] Fetched 0 events for tennis_atp_french_open
+2026-04-01 00:01:22,326 [INFO] Fetching: MLB...
+2026-04-01 00:01:23,389 [INFO] API quota — Used: 64, Remaining: 436
+2026-04-01 00:01:23,395 [INFO] Fetched 28 events for baseball_mlb
+2026-04-01 00:01:23,397 [INFO] Total events fetched: 39
+2026-04-01 00:01:23,398 [INFO] ARB FOUND: Milwaukee Bucks vs Dallas Mavericks | h2h | 0.966% profit
+2026-04-01 00:01:23,409 [INFO] ARB FOUND: Utah Jazz vs Denver Nuggets | h2h | 0.696% profit
